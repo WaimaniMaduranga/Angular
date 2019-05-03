@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Hero } from '../app/heroes/hero'
 import { HEROES } from '../app/mock-heroes'
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { MessageService } from '../app/message.service'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { catchError, map, tap } from 'rxjs/operators';
@@ -10,11 +10,10 @@ import { catchError, map, tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class HeroService {
+  private heroesUrl = 'api/heroes';
+  
 
   constructor(private http: HttpClient, private messageService: MessageService) { }
-  private heroesUrl = 'api/heroes';
-
-
 
   //   /**
   //  * Handle Http operation that failed.
@@ -116,11 +115,12 @@ export class HeroService {
       return of([]);
     }
     return this.http.get<Hero[]>(`${this.heroesUrl}/? name=${term}`)
-    .pipe(
-      tap(_ => this.log(`found heroes matching "${term}"`)),
-      catchError(this.handleError<Hero[]>('searchHeroes',[]))
-    );
+      .pipe(
+        tap(_ => this.log(`found heroes matching "${term}"`)),
+        catchError(this.handleError<Hero[]>('searchHeroes', []))
+      );
   }
 
+  
 
 }
